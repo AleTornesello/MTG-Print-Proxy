@@ -1,0 +1,6 @@
+{
+  "name": "MTG Print Proxy",
+  "description": "A modern Magic: The Gathering deck builder to import deck lists, select card arts, and export printable PDFs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
