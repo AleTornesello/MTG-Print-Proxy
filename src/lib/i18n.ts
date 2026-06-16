@@ -28,6 +28,12 @@ export const translations = {
     searchCardPlaceholder: 'Search for a card...',
     searching: 'Searching...',
     noResults: 'No cards found.',
+    shareDeck: 'Share Deck',
+    linkCopied: 'Copied!',
+    importSharedTitle: 'Import Shared Deck',
+    importSharedMessage: 'Do you want to import the shared deck "{name}"?',
+    importBtn: 'Import',
+    cancelBtn: 'Cancel',
   },
   it: {
     appTitle: 'MTG Print Proxy',
@@ -56,6 +62,12 @@ export const translations = {
     searchCardPlaceholder: 'Cerca una carta...',
     searching: 'Ricerca in corso...',
     noResults: 'Nessuna carta trovata.',
+    shareDeck: 'Condividi Mazzo',
+    linkCopied: 'Copiato!',
+    importSharedTitle: 'Importa Mazzo Condiviso',
+    importSharedMessage: 'Vuoi importare il mazzo condiviso "{name}"?',
+    importBtn: 'Importa',
+    cancelBtn: 'Annulla',
   }
 };
 
