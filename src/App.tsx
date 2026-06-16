@@ -4,6 +4,7 @@ import { fetchCardsCollection, DeckCard, ScryfallCard } from './lib/scryfall';
 import { generatePdf } from './lib/pdfExport';
 import { translations, Locale } from './lib/i18n';
 import { ArtSelector } from './components/ArtSelector';
+import { CardSearchModal } from './components/CardSearchModal';
 import { Download, Languages, Loader2, RefreshCw, Plus } from 'lucide-react';
 import { cn } from './lib/utils';
 
@@ -116,6 +117,28 @@ export default function App() {
   const [progress, setProgress] = useState(0);
 
   const [selectingArtFor, setSelectingArtFor] = useState<DeckCard | null>(null);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  const handleAddCard = (scryfallData: ScryfallCard) => {
+    const existingIndex = cards.findIndex((c: DeckCard) => c.name === scryfallData.name);
+    if (existingIndex !== -1) {
+       updateQuantity(cards[existingIndex].id, 1);
+       setIsSearchModalOpen(false);
+    } else {
+       let selectedImageUrl = scryfallData.image_uris?.normal;
+       if (!selectedImageUrl && scryfallData.card_faces) {
+          selectedImageUrl = scryfallData.card_faces[0].image_uris?.normal;
+       }
+       setCards(prev => [...prev, {
+          id: crypto.randomUUID(),
+          name: scryfallData.name,
+          quantity: 1,
+          scryfallData,
+          selectedImageUrl
+       }]);
+       setIsSearchModalOpen(false);
+    }
+  };
 
   const t = translations[locale];
 
@@ -337,7 +360,16 @@ export default function App() {
                 <div className="flex items-end justify-between mb-8">
                   <div className="min-w-0 flex-1 pr-4">
                     <p className="text-sm text-slate-500 font-medium mb-1">Current Project</p>
-                    <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 truncate" title={deckName || t.untitledDeck}>{deckName || t.untitledDeck}</h2>
+                    <div className="flex flex-wrap items-center gap-3 lg:gap-4">
+                      <h2 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900 truncate" title={deckName || t.untitledDeck}>{deckName || t.untitledDeck}</h2>
+                      <button 
+                        onClick={() => setIsSearchModalOpen(true)}
+                        className="px-3 py-1.5 flex items-center gap-1.5 bg-slate-900 text-white rounded-lg outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        {t.addCard}
+                      </button>
+                    </div>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest leading-none">Total</p>
@@ -402,6 +434,15 @@ export default function App() {
            onSelect={handleSelectArt}
            onClose={() => setSelectingArtFor(null)}
          />
+      )}
+
+      {/* Card Search Modal */}
+      {isSearchModalOpen && (
+        <CardSearchModal
+          locale={locale}
+          onAdd={handleAddCard}
+          onClose={() => setIsSearchModalOpen(false)}
+        />
       )}
     </div>
   );

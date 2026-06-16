@@ -90,6 +90,18 @@ export async function fetchCardsCollection(cards: ParsedCard[]): Promise<{found:
   return { found, notFound };
 }
 
+export async function searchCards(query: string): Promise<ScryfallCard[]> {
+  if (query.length < 3) return [];
+  try {
+    const response = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.data || [];
+  } catch (e) {
+    return [];
+  }
+}
+
 export async function fetchCardPrints(printsSearchUri: string): Promise<ScryfallCard[]> {
   const prints: ScryfallCard[] = [];
   let nextUrl = printsSearchUri;

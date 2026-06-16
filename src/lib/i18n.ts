@@ -24,6 +24,10 @@ export const translations = {
     selectSavedDeck: 'Select a saved deck...',
     loadSavedDeck: 'Saved Decks',
     newDeck: 'New Deck',
+    addCard: 'Add Card',
+    searchCardPlaceholder: 'Search for a card...',
+    searching: 'Searching...',
+    noResults: 'No cards found.',
   },
   it: {
     appTitle: 'MTG Print Proxy',
@@ -48,6 +52,10 @@ export const translations = {
     selectSavedDeck: 'Seleziona un mazzo salvato...',
     loadSavedDeck: 'Mazzi Salvati',
     newDeck: 'Nuovo Mazzo',
+    addCard: 'Aggiungi Carta',
+    searchCardPlaceholder: 'Cerca una carta...',
+    searching: 'Ricerca in corso...',
+    noResults: 'Nessuna carta trovata.',
   }
 };
 
