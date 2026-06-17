@@ -5,8 +5,11 @@ import { generatePdf } from './lib/pdfExport';
 import { translations, Locale } from './lib/i18n';
 import { ArtSelector } from './components/ArtSelector';
 import { CardSearchModal } from './components/CardSearchModal';
-import { Download, Languages, Loader2, RefreshCw, Plus, Share2, Check } from 'lucide-react';
+import { AuthModal } from './components/AuthModal';
+import { Download, Languages, Loader2, RefreshCw, Plus, Share2, Check, User as UserIcon } from 'lucide-react';
 import { cn } from './lib/utils';
+import { supabase } from './lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 export interface DeckData {
   id: string;
@@ -19,6 +22,29 @@ export interface DeckData {
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>('en');
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!supabase) return;
+    
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+  };
 
   const [decks, setDecks] = useState<DeckData[]>(() => {
     try {
@@ -312,6 +338,26 @@ export default function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3">
+               <span className="text-sm font-medium text-slate-700 hidden sm:inline-block max-w-[150px] truncate" title={user.email}>{user.email}</span>
+               <button 
+                 onClick={handleSignOut}
+                 className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300"
+               >
+                 {t.signOut}
+               </button>
+            </div>
+          ) : (
+            <button
+               onClick={() => setIsAuthModalOpen(true)}
+               className="px-3 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 flex items-center gap-1.5"
+            >
+               <UserIcon className="w-3.5 h-3.5" />
+               <span className="hidden sm:inline-block">{t.signIn}</span>
+            </button>
+          )}
+          <div className="w-px h-6 bg-slate-200 hidden sm:block"></div>
           <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
             <button 
               onClick={() => setLocale('en')}
@@ -512,6 +558,14 @@ export default function App() {
           locale={locale}
           onAdd={handleAddCard}
           onClose={() => setIsSearchModalOpen(false)}
+        />
+      )}
+
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <AuthModal 
+          locale={locale}
+          onClose={() => setIsAuthModalOpen(false)}
         />
       )}
 
